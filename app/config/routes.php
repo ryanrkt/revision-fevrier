@@ -10,7 +10,7 @@ use flight\net\Router;
  * @var Engine $app
  */
 
-// This wraps all routes in the group with the SecurityHeadersMiddleware
+
 $router->group('', function(Router $router) use ($app) {
 
 	$router->get('/test', function() use ($app) {
