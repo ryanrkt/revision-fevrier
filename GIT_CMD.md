@@ -1,0 +1,35 @@
+
+CLONER UN REPOSITORY
+=> git clone [URL]
+
+CREER UNE BRANCHE ET L'UTILISER
+=> git checkout -b  [TITRE_BRANCHE]
+
+VOIR LE STATUS
+=>git status
+
+AJOUTER et COMMIT les modifications  LOCALEMENT 
+=> git add -A 
+=>git commit -m [MESSAGE]
+
+ENVOYER BRANCHE DANS GITHUB
+=> git push -u origin [BRANCHE]
+
+IMPORTER TOUTES LES MODIFICATIONS QUI ONT ETAIT IMPORTER DANS LE MAIN
+=> git pull origin main
+
+PULL REQUEST via INTERFACE
+
+REVENIR AU MAIN
+=>git checkout main
+
+AVOIR TOUTES LES MODIFCATIONS LE REPO COMPLET
+=>git pull
+
+SUPPRIMER BRANCHE
+=>git branch -D [BRANCH]
+
+
+
+
+
