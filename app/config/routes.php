@@ -13,24 +13,19 @@ use flight\net\Router;
 // This wraps all routes in the group with the SecurityHeadersMiddleware
 $router->group('', function(Router $router) use ($app) {
 
-	$router->get('/', function() use ($app) {
-		$app->render('welcome', [ 'message' => 'You are gonna do great things!' ]);
+	$router->get('/test', function() use ($app) {
+
+		$db = Flight::db();
+	if ($db) {
+		echo "Database connection successful!";
+	} else {
+		echo "Database connection failed.";
+	}
 	});
 
-	$router->get('/hello-world/@name', function($name) {
-		echo '<h1>Hello world! Oh hey '.$name.'!</h1>';
-	});
+	
 
-	$router->group('/api', function() use ($router) {
-		$router->get('/users', [ ApiExampleController::class, 'getUsers' ]);
-		$router->get('/users/@id:[0-9]', [ ApiExampleController::class, 'getUser' ]);
-		$router->post('/users/@id:[0-9]', [ ApiExampleController::class, 'updateUser' ]);
-	});
-	Flight::route('/test', function () {
-    $db = Flight::db();
-    $result = $db->query("SELECT NOW()")->fetch();
-    var_dump($result);
-});
+
 
 	
 }, [ SecurityHeadersMiddleware::class ]);
