@@ -23,6 +23,21 @@ $router->group('', function(Router $router) use ($app) {
 	}
 	});
 
+	$router->get('/affiche-login', function() use ($app) {
+		$nonce = $app->get('csp_nonce');
+		$app->render('login', ['nonce' => $nonce]);
+	});
+
+	$router->get('/affiche-inscription', function() use ($app) {
+		$nonce = $app->get('csp_nonce');
+		$app->render('inscription', ['nonce' => $nonce]);
+	});
+
+	$router->get('/test-js', function() use ($app) {
+		$nonce = $app->get('csp_nonce');
+		$app->render('test', ['nonce' => $nonce]);
+	});
+
 	
 
 
