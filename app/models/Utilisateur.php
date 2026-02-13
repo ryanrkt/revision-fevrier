@@ -105,10 +105,5 @@ class Utilisateur
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    function mot_de_passe_hash($mdp){
-        $cle = "hash";
 
-        $mdp_hash = hash()
-
-    }
 }
