@@ -1,7 +1,9 @@
 <?php
 
-use app\controllers\ApiExampleController;
+use app\controllers\AuthController;
 use app\middlewares\SecurityHeadersMiddleware;
+use app\middlewares\AdminMiddleware;
+use app\middlewares\ClientMiddleware;
 use flight\Engine;
 use flight\net\Router;
 
@@ -10,37 +12,119 @@ use flight\net\Router;
  * @var Engine $app
  */
 
-
+// Routes publiques (page d'accueil, connexion, inscription)
 $router->group('', function(Router $router) use ($app) {
 
 	$router->get('/test', function() use ($app) {
-
 		$db = Flight::db();
-	if ($db) {
-		echo "Database connection successful!";
-	} else {
-		echo "Database connection failed.";
-	}
+		if ($db) {
+			echo "Database connection successful!";
+		} else {
+			echo "Database connection failed.";
+		}
 	});
 
-	$router->get('/affiche-login', function() use ($app) {
+	$router->get('/', function() use ($app) {
 		$nonce = $app->get('csp_nonce');
-		$app->render('login', ['nonce' => $nonce]);
+		$app->render('home', ['nonce' => $nonce]);
 	});
 
-	$router->get('/affiche-inscription', function() use ($app) {
-		$nonce = $app->get('csp_nonce');
-		$app->render('inscription', ['nonce' => $nonce]);
+	// Routes d'authentification
+	$router->post('/login', function() use ($app) {
+		$controller = new AuthController($app);
+		$controller->login();
 	});
 
-	$router->get('/test-js', function() use ($app) {
-		$nonce = $app->get('csp_nonce');
-		$app->render('test', ['nonce' => $nonce]);
+	$router->post('/register', function() use ($app) {
+		$controller = new AuthController($app);
+		$controller->register();
 	});
 
+	$router->get('/logout', function() use ($app) {
+		$controller = new AuthController($app);
+		$controller->logout();
+	});
+
+}, [SecurityHeadersMiddleware::class]);
+
+// Routes Admin 
+$router->group('/admin', function(Router $router) use ($app) {
 	
+	$router->get('/', function() use ($app) {
+		if (session_status() === PHP_SESSION_NONE) {
+			session_start();
+		}
+		$nonce = $app->get('csp_nonce');
+		$user = $_SESSION['user'] ?? [];
+		
+		// Statistiques 
+		$stats = [
+			'utilisateurs' => 0,
+			'objets' => 0,
+			'echanges' => 0,
+			'en_attente' => 0
+		];
+		
+		$app->render('admin/home', [
+			'nonce' => $nonce,
+			'user' => $user,
+			'stats' => $stats,
+			'derniers_utilisateurs' => []
+		]);
+	});
 
+	$router->get('/utilisateurs', function() use ($app) {
+		$nonce = $app->get('csp_nonce');
+		if (session_status() === PHP_SESSION_NONE) {
+			session_start();
+		}
+		$user = $_SESSION['user'] ?? [];
+		$app->render('admin/utilisateurs', ['nonce' => $nonce, 'user' => $user]);
+	});
 
+}, [SecurityHeadersMiddleware::class, AdminMiddleware::class]);
 
+// Routes Client 
+$router->group('/client', function(Router $router) use ($app) {
 	
-}, [ SecurityHeadersMiddleware::class ]);
+	$router->get('/', function() use ($app) {
+		if (session_status() === PHP_SESSION_NONE) {
+			session_start();
+		}
+		$nonce = $app->get('csp_nonce');
+		$user = $_SESSION['user'] ?? [];
+		
+		// Statistiques 
+		$stats = [
+			'mes_objets' => 0,
+			'mes_echanges' => 0,
+			'en_attente' => 0
+		];
+		
+		$app->render('client/home', [
+			'nonce' => $nonce,
+			'user' => $user,
+			'stats' => $stats,
+			'objets_recents' => []
+		]);
+	});
+
+	$router->get('/objets', function() use ($app) {
+		$nonce = $app->get('csp_nonce');
+		if (session_status() === PHP_SESSION_NONE) {
+			session_start();
+		}
+		$user = $_SESSION['user'] ?? [];
+		$app->render('client/objets', ['nonce' => $nonce, 'user' => $user]);
+	});
+
+	$router->get('/profil', function() use ($app) {
+		$nonce = $app->get('csp_nonce');
+		if (session_status() === PHP_SESSION_NONE) {
+			session_start();
+		}
+		$user = $_SESSION['user'] ?? [];
+		$app->render('client/profil', ['nonce' => $nonce, 'user' => $user]);
+	});
+
+}, [SecurityHeadersMiddleware::class, ClientMiddleware::class]);
